@@ -12,7 +12,7 @@ resource "aws_instance" "example" {
 
 terraform {
   backend "s3" {
-    bucket = "sannatt"
+    bucket = "testingbucketcommerce"
     key    = "terraform.tfstate"
     region = "us-east-1"
   }
