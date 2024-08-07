@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        AWS_DEFAULT_REGION = 'your-aws-region'
+        AWS_DEFAULT_REGION = 'us-east-1'
         AWS_ACCESS_KEY_ID = credentials('AKIA4AJCU34ANEILXAHH')
         AWS_SECRET_ACCESS_KEY = credentials('XwE0HpvzkMQ8imJusgrgvRB6j9qYDD+V04KIXNH/')
     }
@@ -50,9 +50,10 @@ pipeline {
     }
     post {
         always {
-            cleanWs()
+            node {
+                cleanWs()
+            }
         }
     }
 }
 
-         
