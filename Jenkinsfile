@@ -12,14 +12,14 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'ilab-aws']]) {
-                    sh 'terraform init'
+                    sh 'terraform init -input=false'
                 }
             }
         }
         stage('Terraform Plan') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'ilab-aws']]) {
-                    sh 'terraform plan -out=tfplan'
+                    sh 'terraform plan -out=tfplan -input=false'
                 }
             }
         }
@@ -44,4 +44,6 @@ pipeline {
         }
     }
 }
+
+
 
