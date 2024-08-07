@@ -1,9 +1,7 @@
 pipeline {
     agent any
     environment {
-        AWS_DEFAULT_REGION = 'us-east-1'
-        AWS_ACCESS_KEY_ID = credentials('AKIA4AJCU34ANEILXAHH')
-        AWS_SECRET_ACCESS_KEY = credentials('XwE0HpvzkMQ8imJusgrgvRB6j9qYDD+V04KIXNH/')
+        AWS_DEFAULT_REGION = 'us-east-1' // update with your region
     }
     stages {
         stage('Checkout Code') {
@@ -13,41 +11,37 @@ pipeline {
         }
         stage('Terraform Init') {
             steps {
-                sh '''
-                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                terraform init
-                '''
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'ilab-aws']]) {
+                    sh 'terraform init'
+                }
             }
         }
         stage('Terraform Plan') {
             steps {
-                sh '''
-                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                terraform plan -out=tfplan
-                '''
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'ilab-aws']]) {
+                    sh 'terraform plan -out=tfplan'
+                }
             }
         }
         stage('Terraform Apply') {
             steps {
-                sh '''
-                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                terraform apply -auto-approve tfplan
-                '''
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'ilab-aws']]) {
+                    sh 'terraform apply -auto-approve tfplan'
+                }
             }
         }
         stage('Upload State to S3') {
             steps {
-                sh '''
-                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                aws s3 cp terraform.tfstate s3://testingbucketcommerce
-                '''
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'ilab-aws']]) {
+                    sh 'aws s3 cp terraform.tfstate s3://testingbucketcommerce'
+                }
             }
         }
     }
-  
+    post {
+        always {
+            cleanWs()
+        }
+    }
 }
 
